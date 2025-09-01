@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR API - Text Extraction Service</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔍 OCR Text Extraction API</h1>
+            <p class="subtitle">Extract text from images using advanced OCR technology</p>
+        </header>
+
+        <div class="methods-grid">
+            <!-- Method 1: URL Input -->
+            <div class="method-card">
+                <div class="method-header">
+                    <h2>📎 Extract from URL</h2>
+                    <span class="method-badge get">GET</span>
+                </div>
+                <p class="method-description">
+                    Send an image URL and get extracted text back instantly
+                </p>
+                
+                <div class="demo-section">
+                    <h3>Try it now:</h3>
+                    <div class="input-group">
+                        <input 
+                            type="url" 
+                            id="imageUrl" 
+                            placeholder="https://example.com/image.jpg"
+                            class="url-input"
+                        >
+                        <button onclick="processUrl()" class="btn btn-primary">Extract Text</button>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h4>Example Request:</h4>
+                    <pre><code>GET /?url=https://example.com/image.jpg</code></pre>
+                </div>
+            </div>
+
+            <!-- Method 2: File Upload -->
+            <div class="method-card">
+                <div class="method-header">
+                    <h2>📤 Upload Image</h2>
+                    <span class="method-badge post">POST</span>
+                </div>
+                <p class="method-description">
+                    Upload an image file directly from your device for text extraction
+                </p>
+                
+                <div class="demo-section">
+                    <h3>Try it now:</h3>
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-content">
+                            <div class="upload-icon">📁</div>
+                            <p>Click to select an image file</p>
+                            <p class="upload-hint">Supports JPG, PNG, GIF, WebP (max 10MB)</p>
+                        </div>
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            accept="image/*" 
+                            style="display: none;"
+                            onchange="processFile()"
+                        >
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h4>Example Request:</h4>
+                    <pre><code>POST /
+Content-Type: multipart/form-data
+Form field: image=&lt;file&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2>📄 Extracted Text</h2>
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="result-status" id="resultStatus">Processing...</span>
+                    <button onclick="copyToClipboard()" class="btn btn-secondary">📋 Copy</button>
+                </div>
+                <div class="result-content">
+                    <pre id="resultText">Processing your image...</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation -->
+        <div class="api-docs">
+            <h2>📚 API Documentation</h2>
+            
+            <div class="endpoint-card">
+                <h3>GET /?url=&lt;image_url&gt;</h3>
+                <p><strong>Description:</strong> Extract text from an image URL</p>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>url</code> (required) - Direct URL to an image file</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "text": "Extracted text content...",
+  "source": "url",
+  "url": "https://example.com/image.jpg"
+}</code></pre>
+            </div>
+
+            <div class="endpoint-card">
+                <h3>POST /</h3>
+                <p><strong>Description:</strong> Extract text from an uploaded image file</p>
+                <p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+                <p><strong>Form Fields:</strong></p>
+                <ul>
+                    <li><code>image</code> (required) - Image file to process</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "text": "Extracted text content...",
+  "source": "upload",
+  "filename": "document.jpg",
+  "size": 245760
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function processUrl() {
+            const url = document.getElementById('imageUrl').value.trim();
+            
+            if (!url) {
+                alert('Please enter an image URL');
+                return;
+            }
+
+            showResults('Processing image from URL...');
+            
+            try {
+                const response = await fetch(`/?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data.text || 'No text found in image', 'success');
+                } else {
+                    showResults(`Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResults(`Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                return;
+            }
+
+            showResults(`Processing uploaded file: ${file.name}...`);
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const response = await fetch('/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data.text || 'No text found in image', 'success');
+                } else {
+                    showResults(`Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResults(`Upload error: ${error.message}`, 'error');
+            }
+        }
+
+        function showResults(text, status = 'processing') {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultText = document.getElementById('resultText');
+            const resultStatus = document.getElementById('resultStatus');
+            
+            resultsSection.style.display = 'block';
+            resultText.textContent = text;
+            
+            // Update status indicator
+            resultStatus.className = `result-status ${status}`;
+            switch (status) {
+                case 'success':
+                    resultStatus.textContent = '✅ Success';
+                    break;
+                case 'error':
+                    resultStatus.textContent = '❌ Error';
+                    break;
+                default:
+                    resultStatus.textContent = '⏳ Processing';
+            }
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function copyToClipboard() {
+            const resultText = document.getElementById('resultText').textContent;
+            
+            try {
+                await navigator.clipboard.writeText(resultText);
+                
+                // Show feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            } catch (error) {
+                alert('Failed to copy to clipboard');
+            }
+        }
+
+        // Handle Enter key for URL input
+        document.getElementById('imageUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processUrl();
+            }
+        });
+    </script>
+</body>
+</html>
