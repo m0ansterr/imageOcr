@@ -5,6 +5,7 @@
   ],
   "routes": [
     { "src": "/api", "methods": ["GET", "POST"], "dest": "/api/index.js" },
-    { "src": "/", "dest": "/pages/index.html" }
+    { "src": "/", "dest": "/pages/index.html" },
+    { "src": "/static/(.*)", "dest": "/static/$1" }
   ]
 }
