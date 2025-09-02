@@ -1,9 +1,9 @@
 {
-  "name": "ocr-vercel-api",
+  "name": "express-simple-starter",
   "private": true,
   "scripts": {
-    "dev": "vercel dev",
-    "start": "vercel dev"
+    "start": "node api/index.js",
+    "build": "echo 'Build complete - this is a Node.js server, no build step required'"
   },
   "dependencies": {
     "axios": "^1.11.0",
