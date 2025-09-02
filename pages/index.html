@@ -43,48 +43,14 @@
                 </div>
             </div>
 
-            <!-- Method 2: Base64 Input -->
-            <div class="method-card">
-                <div class="method-header">
-                    <h2>🔤 Extract from Base64</h2>
-                    <span class="method-badge post">POST</span>
-                </div>
-                <p class="method-description">
-                    Send a base64-encoded image for instant text extraction
-                </p>
-                
-                <div class="demo-section">
-                    <h3>Try it now:</h3>
-                    <div class="base64-input-group">
-                        <textarea 
-                            id="base64Input" 
-                            placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA... or just the base64 string"
-                            class="base64-textarea"
-                            rows="4"
-                        ></textarea>
-                        <button onclick="processBase64()" class="btn btn-primary">Extract Text</button>
-                    </div>
-                </div>
-
-                <div class="code-example">
-                    <h4>Example Request:</h4>
-                    <pre><code>POST /base64
-Content-Type: application/json
-
-{
-  "image": "data:image/png;base64,iVBORw0KGgo..."
-}</code></pre>
-                </div>
-            </div>
-
-            <!-- Method 3: File Upload -->
+            <!-- Method 2: File Upload -->
             <div class="method-card">
                 <div class="method-header">
                     <h2>📤 Upload Image</h2>
                     <span class="method-badge post">POST</span>
                 </div>
                 <p class="method-description">
-                    Upload an image file (JPG, PNG, BMP, GIF, WebP) from your device
+                    Upload an image file directly from your device for text extraction
                 </p>
                 
                 <div class="demo-section">
@@ -93,7 +59,7 @@ Content-Type: application/json
                         <div class="upload-content">
                             <div class="upload-icon">📁</div>
                             <p>Click to select an image file</p>
-                            <p class="upload-hint">Supports JPG, PNG, BMP, GIF, WebP (max 10MB)</p>
+                            <p class="upload-hint">Supports JPG, PNG, GIF, WebP (max 10MB)</p>
                         </div>
                         <input 
                             type="file" 
@@ -148,6 +114,22 @@ Form field: image=&lt;file&gt;</code></pre>
             </div>
 
             <div class="endpoint-card">
+                <h3>POST /base64</h3>
+                <p><strong>Description:</strong> Extract text from a base64-encoded image</p>
+                <p><strong>Content-Type:</strong> <code>application/json</code></p>
+                <p><strong>Body:</strong></p>
+                <ul>
+                    <li><code>image</code> (required) - Base64-encoded image string (with or without data URL prefix)</li>
+                </ul>
+                <p><strong>Supported formats:</strong> JPG, PNG, BMP, GIF, WebP</p>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "text": "Extracted text content...",
+  "source": "base64",
+  "size": 245760
+}</code></pre>
+            </div>
+            <div class="endpoint-card">
                 <h3>POST /</h3>
                 <p><strong>Description:</strong> Extract text from an uploaded image file</p>
                 <p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
@@ -155,6 +137,7 @@ Form field: image=&lt;file&gt;</code></pre>
                 <ul>
                     <li><code>image</code> (required) - Image file to process</li>
                 </ul>
+                <p><strong>Supported formats:</strong> JPG, PNG, BMP, GIF, WebP</p>
                 <p><strong>Response:</strong></p>
                 <pre><code>{
   "text": "Extracted text content...",
@@ -191,6 +174,15 @@ Form field: image=&lt;file&gt;</code></pre>
             }
         }
 
+        async function processBase64() {
+            const base64Input = document.getElementById('base64Input').value.trim();
+            
+            if (!base64Input) {
+                alert('Please enter base64 image data');
+                return;
+            }
+        }
+        
         async function processFile() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
