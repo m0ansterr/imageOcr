@@ -2,7 +2,7 @@
   "name": "express-simple-starter",
   "private": true,
   "scripts": {
-    "start": "node api/index.js",
+    "start": "node index.js",
     "build": "echo 'Build complete - this is a Node.js server, no build step required'"
   },
   "dependencies": {
