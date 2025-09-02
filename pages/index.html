@@ -43,14 +43,48 @@
                 </div>
             </div>
 
-            <!-- Method 2: File Upload -->
+            <!-- Method 2: Base64 Input -->
+            <div class="method-card">
+                <div class="method-header">
+                    <h2>🔤 Extract from Base64</h2>
+                    <span class="method-badge post">POST</span>
+                </div>
+                <p class="method-description">
+                    Send a base64-encoded image for instant text extraction
+                </p>
+                
+                <div class="demo-section">
+                    <h3>Try it now:</h3>
+                    <div class="base64-input-group">
+                        <textarea 
+                            id="base64Input" 
+                            placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA... or just the base64 string"
+                            class="base64-textarea"
+                            rows="4"
+                        ></textarea>
+                        <button onclick="processBase64()" class="btn btn-primary">Extract Text</button>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h4>Example Request:</h4>
+                    <pre><code>POST /base64
+Content-Type: application/json
+
+{
+  "image": "data:image/png;base64,iVBORw0KGgo..."
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Method 3: File Upload -->
             <div class="method-card">
                 <div class="method-header">
                     <h2>📤 Upload Image</h2>
                     <span class="method-badge post">POST</span>
                 </div>
                 <p class="method-description">
-                    Upload an image file directly from your device for text extraction
+                    Upload an image file (JPG, PNG, BMP, GIF, WebP) from your device
                 </p>
                 
                 <div class="demo-section">
@@ -59,7 +93,7 @@
                         <div class="upload-content">
                             <div class="upload-icon">📁</div>
                             <p>Click to select an image file</p>
-                            <p class="upload-hint">Supports JPG, PNG, GIF, WebP (max 10MB)</p>
+                            <p class="upload-hint">Supports JPG, PNG, BMP, GIF, WebP (max 10MB)</p>
                         </div>
                         <input 
                             type="file" 
