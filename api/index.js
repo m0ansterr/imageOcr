@@ -220,4 +220,15 @@ app.use((error, req, res, next) => {
 //   console.log(`  POST / (with image file)   - OCR from uploaded file`);
 // });
 
-export default app;
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`OCR API server listening at http://localhost:${port}`);
+    console.log('');
+    console.log('Usage:');
+    console.log(`  GET  /?url=<image_url>     - OCR from image URL`);
+    console.log(`  POST /base64               - OCR from base64 image`);
+    console.log(`  POST / (with image file)   - OCR from uploaded file`);
+  });
+}
+
+module.exports = app;
